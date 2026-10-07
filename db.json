@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "ספר ראשון",
+    "category": "עיון",
+    "price": 60,
+    "isBorrowed": true,
+    "borrowings": [
+      {
+        "borrowDate": "2026-10-01",
+        "customerId": 101
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "ספר שני",
+    "category": "צדיקים",
+    "price": 75,
+    "isBorrowed": false,
+    "borrowings": []
+  }
+]
