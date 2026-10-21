@@ -100,3 +100,15 @@ app.delete('/books/:id', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+const express = require('express');
+const userRouter = require('./routes/user.route');
+const bookRouter = require('./routes/book.route');
+
+app.use(express.json());
+
+app.use('/users', userRouter);
+app.use('/books', bookRouter);
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
