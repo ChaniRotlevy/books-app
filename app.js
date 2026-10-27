@@ -8,6 +8,12 @@ const DB_PATH = path.join(__dirname, 'db.json');
 
 app.use(express.json());
 
+const addCurrentDate = require('./middlewares/date.middleware');
+const checkGetMethod = require('./middlewares/checkGet.middleware');
+
+app.use(addCurrentDate);
+app.use(checkGetMethod);
+
 const readDB = () => {
     const data = fs.readFileSync(DB_PATH, 'utf8');
     return JSON.parse(data);
@@ -108,6 +114,11 @@ app.use(express.json());
 
 app.use('/users', userRouter);
 app.use('/books', bookRouter);
+
+const { notFoundHandler, errorHandler } = require('./middlewares/error.middleware');
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
