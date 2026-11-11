@@ -3,7 +3,8 @@ const notFoundHandler = (req, res, next) => {
 };
 
 const errorHandler = (err, req, res, next) => {
-    const statusCode = err.status || 500;
+    const isBadRequest = err.name === 'CastError' || err.name === 'ValidationError';
+    const statusCode = err.status || (isBadRequest ? 400 : 500);
     res.status(statusCode).json({
         error: err.message || "שגיאת שרת כללית",
         type: "server error"
