@@ -1,6 +1,5 @@
 const Book = require('../models/book.model');
-const users = require('../users');
-
+const User = require('../models/user.model');
 const notFound = (next) => {
     const error = new Error('הספר לא נמצא');
     error.status = 404;
@@ -69,20 +68,32 @@ const deleteBook = async (req, res, next) => {
     }
 };
 
-const borrowBook = (req, res) => {
-    const { userId, bookId } = req.body;
-    const user = users.find(u => u.id === userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    user.borrowedBooks.push(bookId);
-    res.json({ message: "Book borrowed successfully", user });
+const borrowBook = async (req, res, next) => {
+    try {
+        const { userId, bookId } = req.body;
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: "User not found" });
+        const book = await Book.findById(bookId);
+        if (!book) return notFound(next);
+        user.borrowedBooks.push(bookId);
+        await user.save();
+        res.json({ message: "Book borrowed successfully", user });
+    } catch (error) {
+        next(error);
+    }
 };
 
-const returnBook = (req, res) => {
-    const { userId, bookId } = req.body;
-    const user = users.find(u => u.id === userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    user.borrowedBooks = user.borrowedBooks.filter(id => id !== bookId);
-    res.json({ message: "Book returned successfully", user });
+const returnBook = async (req, res, next) => {
+    try {
+        const { userId, bookId } = req.body;
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: "User not found" });
+        user.borrowedBooks = user.borrowedBooks.filter(id => id.toString() !== bookId);
+        await user.save();
+        res.json({ message: "Book returned successfully", user });
+    } catch (error) {
+        next(error);
+    }
 };
 
 module.exports = {
