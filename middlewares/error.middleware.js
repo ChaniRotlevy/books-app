@@ -3,10 +3,15 @@ const notFoundHandler = (req, res, next) => {
 };
 
 const errorHandler = (err, req, res, next) => {
-    const isBadRequest = err.name === 'CastError' || err.name === 'ValidationError';
+    const isBadRequest = err.name === 'CastError' || err.name === 'ValidationError' || err.name === 'MulterError';
     const statusCode = err.status || (isBadRequest ? 400 : 500);
+
+    let message = err.message || "שגיאת שרת כללית";
+    if (err.code === 'LIMIT_FILE_SIZE') message = 'הקובץ גדול מדי, המקסימום הוא 1MB';
+
     res.status(statusCode).json({
-        error: err.message || "שגיאת שרת כללית",
+        error: message,
+        details: err.details, // מערך השגיאות מ-Joi (לא יופיע אם אין)
         type: "server error"
     });
 };

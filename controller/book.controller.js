@@ -1,5 +1,6 @@
 const Book = require('../models/book.model');
 const User = require('../models/user.model');
+const fs = require('fs');
 const notFound = (next) => {
     const error = new Error('הספר לא נמצא');
     error.status = 404;
@@ -96,6 +97,28 @@ const returnBook = async (req, res, next) => {
     }
 };
 
+const uploadBookImage = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            const error = new Error('לא נשלח קובץ תמונה');
+            error.status = 400;
+            return next(error);
+        }
+        const book = await Book.findByIdAndUpdate(
+            req.params.id,
+            { image: `/images/${req.file.filename}` },
+            { new: true }
+        );
+        if (!book) {
+            fs.unlink(req.file.path, () => {}); // הספר לא קיים - מוחקים את הקובץ שהועלה
+            return notFound(next);
+        }
+        res.status(200).json(book);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getBooks,
     getBookById,
@@ -103,5 +126,6 @@ module.exports = {
     updateBook,
     deleteBook,
     borrowBook,
-    returnBook
+    returnBook,
+    uploadBookImage
 };

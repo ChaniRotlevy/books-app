@@ -5,6 +5,7 @@ const checkGetMethod = require('./middlewares/checkGet.middleware');
 const userRouter = require('./routes/user.route');
 const bookRouter = require('./routes/book.route');
 const { notFoundHandler, errorHandler } = require('./middlewares/error.middleware');
+const path = require('path');
 
 const app = express();
 const PORT = 3000;
@@ -12,6 +13,7 @@ const PORT = 3000;
 app.use(express.json());
 app.use(addCurrentDate);
 app.use(checkGetMethod);
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/users', userRouter);
 app.use('/books', bookRouter);
